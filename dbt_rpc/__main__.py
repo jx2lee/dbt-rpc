@@ -29,7 +29,7 @@ def initialize_tracking_from_flags():
     # Setting these used to be in UserConfig, but had to be moved here
     flags = get_flags()
     if flags.SEND_ANONYMOUS_USAGE_STATS:
-        dbt.tracking.initialize_tracking(flags.PROFILES_DIR)
+        dbt.tracking.initialize_from_flags(flags, flags.PROFILES_DIR)
     else:
         dbt.tracking.do_not_track()
 
@@ -313,7 +313,7 @@ def _build_base_subparser():
         help=argparse.SUPPRESS,
     )
 
-    base_subparser.set_defaults(defer=None, state=None)
+    base_subparser.set_defaults(defer=None, state=None, defer_state=None)
     return base_subparser
 
 

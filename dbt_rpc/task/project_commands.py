@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import List, Optional, Union
 
 from dbt.contracts.graph.manifest import WritableManifest
+from dbt.contracts.results import RunResultsArtifact
 from dbt.exceptions import DbtRuntimeError
 from dbt.flags import get_flags
 from dbt.task.base import BaseTask
@@ -89,7 +90,6 @@ class RemoteCompileProjectTask(
             self.args.threads = params.threads
 
         self.args.state = state_path(params.state)
-        self.set_previous_state()
 
 
 class RemoteRunProjectTask(RPCCommandTask[RPCRunParameters], RunTask):
@@ -115,7 +115,6 @@ class RemoteRunProjectTask(RPCCommandTask[RPCRunParameters], RunTask):
             self.args.favor_state = params.favor_state
 
         self.args.state = state_path(params.state)
-        self.set_previous_state()
 
 
 class RemoteSeedProjectTask(RPCCommandTask[RPCSeedParameters], SeedTask):
@@ -131,7 +130,6 @@ class RemoteSeedProjectTask(RPCCommandTask[RPCSeedParameters], SeedTask):
         self.args.show = params.show
 
         self.args.state = state_path(params.state)
-        self.set_previous_state()
 
 
 class RemoteTestProjectTask(RPCCommandTask[RPCTestParameters], TestTask):
@@ -154,7 +152,6 @@ class RemoteTestProjectTask(RPCCommandTask[RPCTestParameters], TestTask):
             self.args.defer = params.defer
 
         self.args.state = state_path(params.state)
-        self.set_previous_state()
 
 
 class RemoteDocsGenerateProjectTask(
@@ -172,7 +169,7 @@ class RemoteDocsGenerateProjectTask(
         self.args.state = state_path(params.state)
 
     def get_catalog_results(
-        self, nodes, sources, generated_at, compile_results, errors
+            self, nodes, sources, generated_at, compile_results, errors
     ) -> RemoteCatalogResults:
         return RemoteCatalogResults(
             nodes=nodes,
@@ -205,19 +202,15 @@ class RemoteRunOperationTask(
         self.args.macro = params.macro
         self.args.args = params.args
 
-    def _get_kwargs(self):
-        if isinstance(self.args.args, dict):
-            return self.args.args
-        else:
-            return RunOperationTask._get_kwargs(self)
-
-    def _runtime_initialize(self):
-        return RunOperationTask._runtime_initialize(self)
-
-    def handle_request(self) -> RunOperationCompleteResult:
+    def handle_request(self) -> RunResultsArtifact:
         base = RunOperationTask.run(self)
         base.generated_at = datetime.utcnow()
-        result = RunOperationCompleteResult.from_local_result(base=base, logs=[])
+        result = RunResultsArtifact.from_execution_results(
+            results=base.results,
+            elapsed_time=base.elapsed_time,
+            generated_at=base.generated_at,
+            args=self.args,
+        )
         return result
 
     # def interpret_results(self, results):
@@ -236,7 +229,6 @@ class RemoteSnapshotTask(RPCCommandTask[RPCSnapshotParameters], SnapshotTask):
             self.args.threads = params.threads
 
         self.args.state = state_path(params.state)
-        self.set_previous_state()
 
 
 class RemoteSourceFreshnessTask(
@@ -324,7 +316,6 @@ class RemoteListTask(
 
 
 class RemoteBuildProjectTask(RPCCommandTask[RPCBuildParameters], BuildTask):
-
     METHOD_NAME = 'build'
 
     def set_args(self, params: RPCBuildParameters) -> None:
@@ -345,4 +336,3 @@ class RemoteBuildProjectTask(RPCCommandTask[RPCBuildParameters], BuildTask):
             self.args.favor_state = params.favor_state
 
         self.args.state = state_path(params.state)
-        self.set_previous_state()

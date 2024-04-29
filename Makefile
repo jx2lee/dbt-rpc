@@ -6,7 +6,7 @@ help: ## Show this help message.
 	@echo 'targets:'
 	@grep -E '^[8+a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: dev
+.PHONY: dev_req
 dev_req: ## Installs dbt-rpc in develop mode along with only development dependencies.
 	@\
 	pip install -r dev-requirements.txt

@@ -29,9 +29,6 @@ TaskTags = Optional[Dict[str, Any]]
 TaskID = uuid.UUID
 
 
-# Inputs
-
-
 @dataclass
 class RPCParameters(dbtClassMixin):
     task_tags: TaskTags
@@ -342,7 +339,25 @@ class RunOperationCompleteResult(
             results=base.results,
             elapsed_time=base.elapsed_time,
             logs=logs,
-            success=base.success,
+        )
+
+
+@dataclass
+@schema_version("poll-remote-run-operation-result", 1)
+class RunOperationCompleteResultV2(
+    RunResultsArtifact,
+):
+    success: bool = field(default_factory=bool)
+
+    @classmethod
+    def from_local_result(
+            cls,
+            base: RunResultsArtifact,
+    ) -> "RunResultsArtifact":
+        return cls(
+            metadata=base.metadata,
+            results=base.results,
+            elapsed_time=base.elapsed_time,
         )
 
 
@@ -649,7 +664,6 @@ class PollRunOperationCompleteResult(
             end=timing.end,
             elapsed=timing.elapsed,
             generated_at=base.generated_at,
-            success=base.success,
         )
 
 

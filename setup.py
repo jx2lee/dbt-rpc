@@ -8,8 +8,8 @@ def read(fname):
 
 
 package_name = "dbt-rpc"
-package_version = "0.4.2"
-description = """ A JSON RPC server that provides an interface to programmically interact with dbt projects. """
+package_version = "0.5.0"
+description = """ A JSON RPC server that provides an interface to programmically interact with dbt projects. matained by Coinone."""
 
 
 setup(
@@ -28,7 +28,7 @@ setup(
             "dbt-rpc = dbt_rpc.__main__:main",
         ],
     },
-    install_requires=["json-rpc>=1.14,<2", "dbt-core>=1.5.0,<1.6.0"],
+    install_requires=["json-rpc>=1.14,<2", "dbt-core>=1.5.0", "werkzeug>=1,<3"],
     zip_safe=False,
     classifiers=[
         "Development Status :: 5 - Production/Stable",

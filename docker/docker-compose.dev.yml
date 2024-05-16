@@ -1,0 +1,12 @@
+version: '3.8'
+name: dbt-rpc
+services:
+  server:
+    environment:
+      - DBT_PROJECT_DIR=${DBT_PROJECT_DIR:-default}
+    image: dbt-rpc:local
+    volumes:
+      - ${DBT_PROJECT_DIR}:/app
+    ports:
+      - '8581:8581'
+    network_mode: "host"

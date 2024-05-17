@@ -9,8 +9,7 @@ help: ## Show this help message.
 .PHONY: dev_req
 dev_req: ## Installs dbt-rpc in develop mode along with only development dependencies.
 	@\
-	pip install -r dev-requirements.txt
-	pip install -r editable-requirements.txt
+	pip install -r dev-requirements.txt -r editable-requirements.txt
 
 .PHONY: dev-uninstall
 dev-uninstall: ## Uninstall all packages in venv except for build tools

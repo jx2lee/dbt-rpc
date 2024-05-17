@@ -24,6 +24,4 @@ RUN pip install /src
 RUN mkdir -p /root/.dbt
 
 WORKDIR /app
-ENV DBT_PROFILES_DIR=/app
-ENV DBT_PROJECT_DIR=/app
 ENTRYPOINT ["dbt-rpc", "serve"]
